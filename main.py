@@ -1,6 +1,7 @@
 from database import DatabasePohon
 from pohon import Pohon
 from utils import validasi_tanggal
+from datetime import datetime, timedelta
 
 db = DatabasePohon()
 
@@ -33,7 +34,8 @@ while True:
 
 
     elif pilihan == "2":
-        # TODO : Kerjakan disini (fitur2)
+        # TODO : Kerjakan disini (fitur2)                   
+
         else:
             print("\n🔍 Submenu:")
             print("a. Cek umur dari tanggal")
@@ -42,9 +44,18 @@ while True:
             if sub == "a":
                 try:
                     # (fitur3)
-                    tanggal = input("Masukkan tanggal (YYYY-MM-DD): ")
-                    umur = db.cek_umur_dari_tanggal(tanggal)
-                    print(f"Umur pohon: {umur} tahun")
+                    id_input = int(input("Masukkan ID pohon: "))
+                    id = next((pohon for pohon in db.data if pohon.id == id_input), None)
+                    if id :
+                        tanggal_input = input("Masukkan tanggal (YYYY-MM-DD): ")
+                        tanggal = datetime.strptime(tanggal_input, "%Y-%m-%d").date()
+                        if tanggal >= pohon.tanggal_tanam:
+                            umur = (tanggal - pohon.tanggal_tanam).days
+                            print(f"Umur pohon: {umur} hari")
+                        else:
+                            print("❌ Tanggal harus setelah tanggal penanaman pohon.")
+                    else:
+                        print("❌ ID pohon tidak ditemukan.")
 
                 except:
                     print("❌ Input tidak valid.")
@@ -52,10 +63,19 @@ while True:
             elif sub == "b":
                 try:
                     # (fitur3)
-                    umur = int(input("Masukkan umur pohon (dalam tahun): "))
-                    tanggal = db.cek_tanggal_dari_umur(umur)
-                    print(f"Tanggal penanaman pohon: {tanggal}")
-
+                    id_input = int(input("Masukkan ID pohon: "))
+                    id = next((pohon for pohon in db.data if pohon.id == id_input), None)
+                    if id :
+                        umur = int(input("Masukkan umur pohon (dalam hari): "))
+                        if umur >= 0:
+                            tanggal_tanam = pohon.tanggal_tanam
+                            tanggal_hitung = tanggal_tanam + timedelta(days=umur)
+                            print(f"Tanggal penanaman pohon: {tanggal_hitung}")
+                        else:
+                            print("❌ Umur tidak boleh negatif.")
+                    else:
+                        print("❌ ID pohon tidak ditemukan.")
+                   
                 except:
                     print("❌ Input tidak valid.")
             else:
